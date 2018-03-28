@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const NewsAPI = require('newsapi');
 
 const newsapi = new NewsAPI(process.env.API_KEY);
+const { processLangFromBrowser } = require('./helpers/processLangFromBrowser');
 
 const app = express();
 
@@ -14,19 +15,11 @@ app.use(bodyParser.json());
 // make get requests here. Account for 404 and 500 errors.
 
 app.get('/topheadlines', (req, res, next) => {
-  //TODO take language checking into a separate function;
   const acceptLang = req.headers['accept-language'];
-  const lang = acceptLang.split(',')[0].split('-')[1];
 
-  const acceptedLangs = ['ae', 'ar', 'at', 'au', 'be', 'bg', 'br', 'ca', 'ch', 'cn', 'co', 'cu', 'cz', 'de', 'eg', 'fr', 'gb', 'gr', 'hk', 'hu', 'id', 'ie', 'il', 'in', 'it', 'jp', 'kr', 'lt', 'lv', 'ma', 'mx', 'my', 'ng', 'nl', 'no', 'nz', 'ph', 'pl', 'pt', 'ro', 'rs', 'ru', 'sa', 'se', 'sg', 'si', 'sk', 'th', 'tr', 'tw', 'ua', 'us', 've', 'za'];
+  console.log(acceptLang);
+  const queryLang = processLangFromBrowser(acceptLang);
 
-  let queryLang;
-
-  if (acceptedLangs.includes(lang.toLowerCase())) {
-    queryLang = lang;
-  } else {
-    queryLang = 'gb';
-  }
   newsapi.v2.topHeadlines({
     category: 'general',
     country: queryLang,
